@@ -20,6 +20,7 @@ func NewLinearPIDController(p, i, d *float64) *LinearPIDController {
 		i:                 i,
 		d:                 d,
 		previousTimestamp: nil,
+		previousError:     nil,
 		integral:          0,
 	}
 }
@@ -44,4 +45,10 @@ func (pid *LinearPIDController) GetOutput(timestamp, currentValue, targetValue f
 	*pid.previousError = currentError
 	*pid.previousTimestamp = timestamp
 	return *pid.p*currentError + *pid.i*pid.integral + *pid.d*derivative
+}
+
+func (pid *LinearPIDController) Reset() {
+	pid.previousTimestamp = nil
+	pid.integral = 0.0
+	pid.previousError = nil
 }
