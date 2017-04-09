@@ -128,3 +128,24 @@ func TestGlobalTuning(t *testing.T) {
 		t.Error("Values not equal", output, expected)
 	}
 }
+
+func TestIReset(t *testing.T) {
+	p := 1.0
+	i := 1.0
+	d := 1.0
+	var expected float64
+	var output float64
+	controller := pidcontroller.NewLinearPIDController(&p, &i, &d)
+
+	output = controller.GetOutput(1.0, 0.0, 5.0)
+	expected = 5.0
+	if output != expected {
+		t.Error("Values not equal", output, expected)
+	}
+
+	output = controller.GetOutput(2.0, 6.0, 5.0)
+	expected = -8
+	if output != expected {
+		t.Error("Values not equal", output, expected)
+	}
+}

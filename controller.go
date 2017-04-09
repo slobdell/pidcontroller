@@ -35,6 +35,7 @@ func (pid *LinearPIDController) GetOutput(timestamp, currentValue, targetValue f
 		if deltaT == 0.0 {
 			panic("No differential between previous timestamp and current")
 		}
+		pid.maybeResetIntegral(currentError)
 		pid.integral += currentError * deltaT
 		derivative = (currentError - *pid.previousError) / deltaT
 	} else {
@@ -45,6 +46,19 @@ func (pid *LinearPIDController) GetOutput(timestamp, currentValue, targetValue f
 	*pid.previousError = currentError
 	*pid.previousTimestamp = timestamp
 	return *pid.p*currentError + *pid.i*pid.integral + *pid.d*derivative
+}
+
+func (pid *LinearPIDController) maybeResetIntegral(currentError float64) {
+	if pid.previousError == nil {
+		return
+	}
+	if *pid.previousError == 0.0 {
+		return
+	}
+	// error has flipped sign, target has been reached
+	if currentError / *pid.previousError < 0 {
+		pid.integral = 0.0
+	}
 }
 
 func (pid *LinearPIDController) Reset() {
